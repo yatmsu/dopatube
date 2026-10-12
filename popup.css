@@ -1,0 +1,133 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, sans-serif;
+  --text-color: #0f0f0f;
+  --secondary-color: #606060;
+  --background-color: #ffffff;
+  --surface-color: #f2f2f2;
+  --border-color: #e5e5e5;
+  --link-color: #065fd4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-color: #f1f1f1;
+    --secondary-color: #b0b0b0;
+    --background-color: #0f0f0f;
+    --surface-color: #272727;
+    --border-color: #3f3f3f;
+    --link-color: #3ea6ff;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 360px;
+  margin: 0;
+  background: var(--background-color);
+  color: var(--text-color);
+}
+
+main {
+  padding: 24px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand img {
+  flex: 0 0 auto;
+}
+
+h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.intro {
+  margin-top: 12px;
+}
+
+section {
+  margin-top: 24px;
+}
+
+.speed-cycle {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--surface-color);
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.speed-cycle span {
+  margin: 0 4px;
+  color: var(--secondary-color);
+}
+
+.note {
+  margin-top: 12px;
+  color: var(--secondary-color);
+  font-size: 13px;
+}
+
+.youtube-link {
+  display: block;
+  margin-top: 20px;
+  padding: 10px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--link-color);
+  text-align: center;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.youtube-link:hover {
+  background: var(--surface-color);
+}
+
+.youtube-link:focus-visible {
+  outline: 2px solid var(--link-color);
+  outline-offset: 3px;
+}
+
+footer {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+  color: var(--secondary-color);
+}
+
+footer p {
+  font-size: 12px;
+}
+
+footer p + p {
+  margin-top: 6px;
+}
+
+footer .version {
+  margin-top: 12px;
+}

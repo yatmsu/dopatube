@@ -1,0 +1,65 @@
+# DopaTube
+
+A Chrome extension that lets you change YouTube playback speed with a single click from the header.
+
+![DopaTube logo](assets/logo-preview.jpg)
+
+## Features
+
+- Adds a playback speed button between the YouTube logo and the search box.
+- Cycles through **1.0× → 1.5× → 2.0× → 1.0×** with each click.
+- Keeps the selected speed when switching videos within the same page.
+- Adjusts the button's position as the window resizes. If there is not enough space, the button appears next to the logo.
+
+Works on `https://www.youtube.com/` in desktop Chrome.
+
+## Installation
+
+You can install the extension from source.
+
+1. Download and extract this repository, or clone it:
+
+   ```sh
+   git clone https://github.com/yatmsu/dopatube.git
+   ```
+
+2. Open `chrome://extensions` in Chrome.
+3. Enable **Developer mode** in the top-right corner.
+4. Click **Load unpacked**.
+5. Select the `dopatube` folder containing `manifest.json`.
+6. Open YouTube. If it is already open, reload the page.
+
+A Chrome Web Store installation link will be added here once the extension is published.
+
+## Usage
+
+Click the numbered button in the YouTube header.
+The number displayed is the playback speed applied to videos on that page.
+
+The default speed is `1.0×`. Reloading the page or opening a new tab resets the speed to `1.0×`.
+Each tab maintains its own selection. Speed preferences are neither saved nor synced across tabs.
+
+DopaTube restores its selected speed even if you change the speed using YouTube's built-in controls.
+To use YouTube's built-in speed settings, disable DopaTube at `chrome://extensions` and reload YouTube.
+
+## Privacy and Site Access
+
+DopaTube does not collect, store, or transmit personal information, watch history, or search history.
+It does not use analytics or communicate with external servers.
+
+The content script runs only on `https://www.youtube.com/*` to add the header button and change video playback speed.
+No additional `permissions` or `host_permissions` are declared.
+
+See the [Privacy Policy](PRIVACY.md) for details.
+
+## Development
+
+Built with Manifest V3 and HTML, CSS, and JavaScript.
+No dependency installation or build step is required.
+
+After editing files, click the reload button for DopaTube at `chrome://extensions`, then reload the YouTube page.
+Close and reopen the popup to see changes to it.
+
+## License
+
+[MIT License](LICENSE)

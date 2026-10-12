@@ -1,0 +1,35 @@
+#dopatube-header-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 48px;
+  height: 36px;
+  margin: 0 8px 0 12px;
+  padding: 0 12px;
+  border: 1px solid var(--yt-spec-10-percent-layer, #d9d9d9);
+  border-radius: 18px;
+  background: var(--yt-spec-badge-chip-background, #f2f2f2);
+  color: var(--yt-spec-text-primary, #0f0f0f);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+#dopatube-header-toggle.dopatube-centered {
+  position: fixed;
+  margin: 0;
+  transform: translate(-50%, -50%);
+}
+
+#dopatube-header-toggle:hover {
+  background: var(--yt-spec-10-percent-layer, #e5e5e5);
+}
+
+#dopatube-header-toggle:focus-visible {
+  outline: 2px solid var(--yt-spec-call-to-action, #065fd4);
+  outline-offset: 2px;
+}

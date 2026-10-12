@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DopaTube</title>
+    <link rel="stylesheet" href="popup.css" />
+    <script src="popup.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <header class="brand">
+        <img src="assets/icons/icon-48.png" width="48" height="48" alt="" />
+        <h1>DopaTube</h1>
+      </header>
+      <p class="intro">YouTube の再生速度を、ワンクリックで。</p>
+
+      <section aria-labelledby="usage-title">
+        <h2 id="usage-title">使い方</h2>
+        <p>YouTube のロゴと検索ボックスの間にある、数字のボタンをクリックしてください。</p>
+        <p class="speed-cycle" aria-label="1.0 倍、1.5 倍、2.0 倍、1.0 倍の順に切り替わります">
+          1.0 <span aria-hidden="true">→</span> 1.5 <span aria-hidden="true">→</span> 2.0 <span aria-hidden="true">→</span> 1.0
+        </p>
+        <p class="note">表示中の数字が再生速度です。動画を切り替えても維持し、ページを再読み込みすると 1.0 倍に戻ります。</p>
+        <p class="note">YouTube 標準の速度設定を変更した場合も、DopaTube の表示値が優先されます。</p>
+      </section>
+
+      <a class="youtube-link" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">YouTube を開く</a>
+
+      <footer>
+        <p>個人情報や視聴履歴の収集・外部送信は行いません。</p>
+        <p>YouTube / Google の公式製品ではありません。</p>
+        <p class="version">バージョン <span id="version"></span></p>
+      </footer>
+    </main>
+  </body>
+</html>
