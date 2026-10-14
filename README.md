@@ -15,21 +15,7 @@ Works on `https://www.youtube.com/` in desktop Chrome.
 
 ## Installation
 
-You can install the extension from source.
-
-1. Download and extract this repository, or clone it:
-
-   ```sh
-   git clone https://github.com/yatmsu/dopatube.git
-   ```
-
-2. Open `chrome://extensions` in Chrome.
-3. Enable **Developer mode** in the top-right corner.
-4. Click **Load unpacked**.
-5. Select the `dopatube` folder containing `manifest.json`.
-6. Open YouTube. If it is already open, reload the page.
-
-A Chrome Web Store installation link will be added here once the extension is published.
+Install [DopaTube from the Chrome Web Store](https://chromewebstore.google.com/detail/dopatube/kjaphodjmimipehdghlmcpecnchfcoii), then open YouTube. If YouTube is already open, reload the page.
 
 ## Usage
 
@@ -57,8 +43,29 @@ See the [Privacy Policy](PRIVACY.md) for details.
 Built with Manifest V3 and HTML, CSS, and JavaScript.
 No dependency installation or build step is required.
 
+### Install from source
+
+1. Download and extract this repository, or clone it:
+
+   ```sh
+   git clone https://github.com/yatmsu/dopatube.git
+   ```
+
+2. Open `chrome://extensions` in Chrome.
+3. Enable **Developer mode** in the top-right corner.
+4. Click **Load unpacked**.
+5. Select the `dopatube` folder containing `manifest.json`.
+6. Open YouTube. If it is already open, reload the page.
+
+### Reload after changes
+
 After editing files, click the reload button for DopaTube at `chrome://extensions`, then reload the YouTube page.
 Close and reopen the popup to see changes to it.
+
+## Support
+
+Report bugs and suggest features through [GitHub Issues](https://github.com/yatmsu/dopatube/issues).
+For bug reports, include your Chrome version, steps to reproduce the issue, and the expected and actual behavior.
 
 ## License
 
