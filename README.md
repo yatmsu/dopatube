@@ -25,8 +25,8 @@ The number displayed is the playback speed applied to videos on that page.
 The default speed is `1.0×`. Reloading the page or opening a new tab resets the speed to `1.0×`.
 Each tab maintains its own selection. Speed preferences are neither saved nor synced across tabs.
 
-DopaTube restores its selected speed even if you change the speed using YouTube's built-in controls.
-To use YouTube's built-in speed settings, disable DopaTube at `chrome://extensions` and reload YouTube.
+YouTube's built-in speed controls also work. DopaTube displays the speed you select, including values such as `1.25×`.
+The next click selects the next higher speed among `1.0×`, `1.5×`, and `2.0×`, wrapping to `1.0×` at `2.0×` or above.
 
 ## Privacy and Site Access
 

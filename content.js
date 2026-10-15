@@ -1,10 +1,19 @@
 (() => {
   const buttonId = "dopatube-header-toggle";
-  const values = ["1.0", "1.5", "2.0"];
-  let valueIndex = 0;
+  const controlsId = "dopatube-header-controls";
+  const values = [1, 1.5, 2];
+  let currentRate = 1;
+
+  function nextRate() {
+    return values.find((rate) => rate > currentRate) ?? values[0];
+  }
+
+  function formatRate(rate) {
+    return Number.isInteger(rate) ? rate.toFixed(1) : String(rate);
+  }
 
   function applyPlaybackRate(video) {
-    const rate = Number(values[valueIndex]);
+    const rate = currentRate;
 
     if (video.defaultPlaybackRate !== rate) {
       video.defaultPlaybackRate = rate;
@@ -18,9 +27,29 @@
     document.querySelectorAll("video").forEach(applyPlaybackRate);
   }
 
+  const controls = document.createElement("div");
+  controls.id = controlsId;
+
   const button = document.createElement("button");
   button.id = buttonId;
   button.type = "button";
+
+  const icon = document.createElement("img");
+  icon.className = "dopatube-icon";
+  icon.src = chrome.runtime.getURL("assets/header-logo.png");
+  icon.alt = "DopaTube";
+  icon.width = 256;
+  icon.height = 180;
+  icon.draggable = false;
+
+  const logoFrame = document.createElement("span");
+  logoFrame.className = "dopatube-logo";
+  logoFrame.append(icon);
+
+  const speedLabel = document.createElement("span");
+  speedLabel.className = "dopatube-speed";
+  button.append(speedLabel);
+  controls.append(logoFrame, button);
 
   let positionFrame = null;
   let observedElements = [];
@@ -49,60 +78,64 @@
   }
 
   function updateButtonPosition() {
-    if (!button.isConnected) {
+    if (!controls.isConnected) {
       return;
     }
 
-    const masthead = button.closest("ytd-masthead");
+    const masthead = controls.closest("ytd-masthead");
     const logo = masthead?.querySelector("#start > #logo a")
       ?? masthead?.querySelector("#start > #logo");
-    const search = Array.from(masthead?.querySelectorAll(
+    const searchHost = Array.from(masthead?.querySelectorAll(
       "#center yt-searchbox, #center ytd-searchbox, #center #search-button-narrow"
     ) ?? []).find((element) => element.getBoundingClientRect().width > 0);
 
+    const search = searchHost?.querySelector(".ytSearchboxComponentInputWrapper")
+      ?? searchHost;
+
     if (!logo || !search) {
       observePositionElements(masthead ? [masthead] : []);
-      button.classList.remove("dopatube-centered");
+      controls.classList.remove("dopatube-centered");
+      controls.style.removeProperty("left");
+      controls.style.removeProperty("top");
       return;
     }
 
     observePositionElements([masthead, logo, search]);
 
-    // Remove the button from the flex layout before measuring the available gap.
-    button.classList.add("dopatube-centered");
+    // Keep space reserved in the flex layout, then center within the visible gap.
+    controls.classList.add("dopatube-centered");
+    controls.style.left = "0px";
+    controls.style.top = "0px";
     const logoRect = logo.getBoundingClientRect();
     const searchRect = search.getBoundingClientRect();
-    const gap = searchRect.left - logoRect.right;
+    const controlsRect = controls.getBoundingClientRect();
+    const centerX = (logoRect.right + searchRect.left) / 2;
+    const centerY = searchRect.top + searchRect.height / 2;
 
-    if (gap < button.getBoundingClientRect().width + 16) {
-      button.classList.remove("dopatube-centered");
-      return;
-    }
-
-    button.style.left = `${(logoRect.right + searchRect.left) / 2}px`;
-    button.style.top = `${searchRect.top + searchRect.height / 2}px`;
+    controls.style.left = `${centerX - (controlsRect.left + controlsRect.width / 2)}px`;
+    controls.style.top = `${centerY - (controlsRect.top + controlsRect.height / 2)}px`;
   }
 
   window.addEventListener("resize", schedulePositionUpdate);
   document.addEventListener("yt-navigate-finish", schedulePositionUpdate);
 
   function updateButton() {
-    const current = values[valueIndex];
-    const next = values[(valueIndex + 1) % values.length];
+    const current = formatRate(currentRate);
+    const next = formatRate(nextRate());
 
-    button.textContent = current;
+    speedLabel.textContent = current;
     button.title = `DopaTube: 再生速度 ${current} 倍（クリックで ${next} 倍）`;
     button.setAttribute("aria-label", button.title);
   }
 
   button.addEventListener("click", () => {
-    valueIndex = (valueIndex + 1) % values.length;
+    currentRate = nextRate();
     updateButton();
     applyToAllVideos();
   });
 
   // Media events do not bubble, so use capture to handle new and reused players.
-  for (const eventName of ["loadedmetadata", "play", "ratechange"]) {
+  for (const eventName of ["loadedmetadata", "play"]) {
     document.addEventListener(eventName, (event) => {
       if (event.target instanceof HTMLVideoElement) {
         applyPlaybackRate(event.target);
@@ -110,8 +143,22 @@
     }, true);
   }
 
+  // Reflect changes from YouTube's controls instead of undoing them.
+  document.addEventListener("ratechange", (event) => {
+    if (!(event.target instanceof HTMLVideoElement)) {
+      return;
+    }
+    const rate = event.target.playbackRate;
+    if (!Number.isFinite(rate) || rate <= 0 || rate === currentRate) {
+      return;
+    }
+    currentRate = rate;
+    updateButton();
+    schedulePositionUpdate();
+  }, true);
+
   function insertButton() {
-    if (button.isConnected || document.getElementById(buttonId)) {
+    if (controls.isConnected || document.getElementById(controlsId)) {
       return;
     }
 
@@ -120,7 +167,7 @@
 
     const logo = document.querySelector("ytd-masthead #start > #logo");
     if (logo) {
-      logo.after(button);
+      logo.after(controls);
       headerObserver.observe(logo.closest("ytd-masthead"), {
         childList: true,
         subtree: true
@@ -135,7 +182,7 @@
 
   // Watch the page for new videos and header replacement, not layout updates.
   const observer = new MutationObserver((records) => {
-    if (!button.isConnected) {
+    if (!controls.isConnected) {
       insertButton();
     }
     for (const record of records) {
