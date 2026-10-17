@@ -50,9 +50,27 @@
   flex: 0 0 auto;
   width: calc(36px * 221 / 135);
   height: 36px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
   border-radius: 8px 0 0 8px;
   background: #ff0000;
   overflow: hidden;
+  cursor: pointer;
+}
+
+#dopatube-header-controls .dopatube-logo:disabled {
+  cursor: default;
+}
+
+#dopatube-header-controls .dopatube-logo:not(:disabled):hover {
+  filter: brightness(0.9);
+}
+
+#dopatube-header-controls .dopatube-logo:focus-visible {
+  outline: 2px solid var(--yt-spec-call-to-action, #065fd4);
+  outline-offset: 2px;
 }
 
 /* Crop the transparent padding around the header logo's 221 x 135px artwork. */

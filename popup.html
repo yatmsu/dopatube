@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>DopaTube</title>
     <link rel="stylesheet" href="popup.css" />
+    <script src="settings.js" defer></script>
     <script src="popup.js" defer></script>
   </head>
   <body>
@@ -18,13 +19,14 @@
       <section aria-labelledby="usage-title">
         <h2 id="usage-title">使い方</h2>
         <p>YouTube のロゴと検索ボックスの間にある、数字のボタンをクリックしてください。</p>
-        <p class="speed-cycle" aria-label="1.0 倍、1.5 倍、2.0 倍、1.0 倍の順に切り替わります">
-          1.0 <span aria-hidden="true">→</span> 1.5 <span aria-hidden="true">→</span> 2.0 <span aria-hidden="true">→</span> 1.0
-        </p>
+        <p class="speed-cycle" id="speed-cycle" aria-live="polite">設定を読み込み中…</p>
         <p class="note">表示中の数字が再生速度です。動画を切り替えても維持し、ページを再読み込みすると 1.0 倍に戻ります。</p>
-        <p class="note">YouTube 標準の速度設定も利用できます。変更した速度はボタンに反映され、次のクリックで現在より大きい 1.0・1.5・2.0 倍のいずれかに切り替わります。2.0 倍以上からは 1.0 倍に戻ります。</p>
+        <p class="note">設定画面で2〜5個の速度を0.05倍刻みで登録できます。「ド」の動作は、次の速度へ切り替える・1.0倍に戻す・何もしない、から選べます。</p>
+        <p class="note">YouTube 標準の速度設定も利用できます。変更した速度はボタンに反映されます。</p>
       </section>
 
+      <button class="youtube-link" id="open-settings" type="button">設定を開く</button>
+      <p class="note" id="settings-error" role="alert"></p>
       <a class="youtube-link" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">YouTube を開く</a>
 
       <footer>

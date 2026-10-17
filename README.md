@@ -7,9 +7,11 @@ A Chrome extension that lets you change YouTube playback speed with a single cli
 ## Features
 
 - Adds a playback speed button between the YouTube logo and the search box.
-- Cycles through **1.0× → 1.5× → 2.0× → 1.0×** with each click.
+- Cycles through **1.0× → 1.5× → 2.0× → 1.0×** by default.
+- Supports 2–5 custom speeds from 0.25× to 4.0× in 0.05× increments, in your chosen order.
+- Lets you choose whether clicking the logo advances the cycle, resets to 1.0×, or does nothing.
 - Keeps the selected speed when switching videos within the same page.
-- Adjusts the button's position as the window resizes. If there is not enough space, the button appears next to the logo.
+- Centers the logo and speed control between the YouTube logo and the search box as the window resizes.
 
 Works on `https://www.youtube.com/` in desktop Chrome.
 
@@ -23,10 +25,18 @@ Click the numbered button in the YouTube header.
 The number displayed is the playback speed applied to videos on that page.
 
 The default speed is `1.0×`. Reloading the page or opening a new tab resets the speed to `1.0×`.
-Each tab maintains its own selection. Speed preferences are neither saved nor synced across tabs.
+Each tab maintains its own current speed. The current speed is neither saved nor synced across tabs.
 
 YouTube's built-in speed controls also work. DopaTube displays the speed you select, including values such as `1.25×`.
-The next click selects the next higher speed among `1.0×`, `1.5×`, and `2.0×`, wrapping to `1.0×` at `2.0×` or above.
+Clicking the number advances to the next entry in your configured cycle. If the current speed is not in the cycle, the next click selects the first higher speed in the configured order, or the first entry if none is higher.
+
+### Settings
+
+Open the extension popup and click **設定を開く** (Open settings). Add or remove speed entries to keep 2–5 distinct values, in 0.05× increments between 0.25× and 4.0×. Entries cycle from top to bottom; edit the values to change the order.
+
+Choose the logo click action: advance to the next speed (default), reset to 1.0×, or do nothing. The number always advances the cycle. Resetting to 1.0× works even when 1.0× is not in the cycle.
+
+Click **保存** (Save) to apply preferences to open YouTube tabs without changing their current playback speed. Preferences are stored locally and survive browser restarts. **初期設定に戻す** (Restore defaults) immediately saves the default cycle and logo action.
 
 ## Privacy and Site Access
 
@@ -34,7 +44,7 @@ DopaTube does not collect, store, or transmit personal information, watch histor
 It does not use analytics or communicate with external servers.
 
 The content script runs only on `https://www.youtube.com/*` to add the header button and change video playback speed.
-No additional `permissions` or `host_permissions` are declared.
+The `storage` permission is used only to save the speed cycle and logo action on your device. No `host_permissions` are declared, and preferences are not synced to your Google account.
 
 See the [Privacy Policy](PRIVACY.md) for details.
 
@@ -61,6 +71,10 @@ No dependency installation or build step is required.
 
 After editing files, click the reload button for DopaTube at `chrome://extensions`, then reload the YouTube page.
 Close and reopen the popup to see changes to it.
+
+### Tests
+
+Run `node --test tests/*.test.cjs` to check settings validation, speed cycling, and content script behavior.
 
 ## Support
 

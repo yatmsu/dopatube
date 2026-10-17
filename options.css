@@ -1,0 +1,53 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, sans-serif;
+  --bg: #fafafa;
+  --surface: #fff;
+  --text: #0f0f0f;
+  --muted: #606060;
+  --border: #d9d9d9;
+  --focus: #065fd4;
+  --error: #b3261e;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f0f0f;
+    --surface: #202020;
+    --text: #f1f1f1;
+    --muted: #b0b0b0;
+    --border: #555;
+    --focus: #8ab4f8;
+    --error: #ffb4ab;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.7; }
+main { max-width: 640px; margin: 40px auto; padding: 0 24px; }
+header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+.brand { margin: 0; color: var(--muted); }
+h1 { margin: 0; font-size: 26px; }
+h2 { margin: 0 0 8px; font-size: 18px; }
+p { margin: 0 0 12px; }
+fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+section { padding: 24px; margin-bottom: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+.speed-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+.speed-row label { min-width: 50px; }
+input[type="number"] { width: 112px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font: inherit; }
+button { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; font: inherit; font-weight: 600; cursor: pointer; }
+.secondary { color: var(--text); background: var(--surface); }
+.primary { color: #fff; background: #c00; border-color: #c00; }
+button:disabled { opacity: 0.45; cursor: default; }
+:is(button, input):focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+.choice { display: flex; align-items: center; gap: 10px; padding: 8px 0; cursor: pointer; }
+input[type="radio"] { accent-color: #c00; width: 18px; height: 18px; margin: 0; }
+.hint, footer { color: var(--muted); font-size: 13px; }
+.hint { margin: 12px 0 0; }
+.preview { margin: 16px 0 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+#error-message { margin-top: 16px; color: var(--error); }
+#status-message { color: var(--muted); }
+footer { margin-top: 28px; }
+@media (max-width: 420px) {
+  main { margin-top: 24px; padding: 0 16px; }
+  section { padding: 16px; }
+}

@@ -78,6 +78,7 @@ section {
   font-size: 18px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
 }
 
 .speed-cycle span {
@@ -93,6 +94,10 @@ section {
 
 .youtube-link {
   display: block;
+  width: 100%;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
   margin-top: 20px;
   padding: 10px 16px;
   border: 1px solid var(--border-color);

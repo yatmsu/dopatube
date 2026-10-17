@@ -1,18 +1,33 @@
 (() => {
   const buttonId = "dopatube-header-toggle";
   const controlsId = "dopatube-header-controls";
-  const values = [1, 1.5, 2];
+  const { storageKey, normalize, formatRate } = DopaTubeSettings;
+  let settings = normalize();
   let currentRate = 1;
+  let navigating = false;
 
-  function nextRate() {
-    return values.find((rate) => rate > currentRate) ?? values[0];
+  function isPlaybackVideo(video, allowNavigation = false) {
+    if ((!allowNavigation && navigating) || video.closest("#inline-preview-player")) {
+      return false;
+    }
+    // YouTube can reuse #movie_player for a 0.4x preview on the home page.
+    if (location.pathname === "/watch") {
+      return Boolean(video.closest("#movie_player"));
+    }
+    if (location.pathname.startsWith("/shorts/")) {
+      return Boolean(video.closest("#shorts-player"));
+    }
+    return false;
   }
 
-  function formatRate(rate) {
-    return Number.isInteger(rate) ? rate.toFixed(1) : String(rate);
+  function nextRate() {
+    return DopaTubeSettings.nextRate(settings.speeds, currentRate);
   }
 
   function applyPlaybackRate(video) {
+    if (!isPlaybackVideo(video)) {
+      return;
+    }
     const rate = currentRate;
 
     if (video.defaultPlaybackRate !== rate) {
@@ -37,12 +52,13 @@
   const icon = document.createElement("img");
   icon.className = "dopatube-icon";
   icon.src = chrome.runtime.getURL("assets/header-logo.png");
-  icon.alt = "DopaTube";
+  icon.alt = "";
   icon.width = 256;
   icon.height = 180;
   icon.draggable = false;
 
-  const logoFrame = document.createElement("span");
+  const logoFrame = document.createElement("button");
+  logoFrame.type = "button";
   logoFrame.className = "dopatube-logo";
   logoFrame.append(icon);
 
@@ -117,7 +133,14 @@
   }
 
   window.addEventListener("resize", schedulePositionUpdate);
-  document.addEventListener("yt-navigate-finish", schedulePositionUpdate);
+  document.addEventListener("yt-navigate-start", () => {
+    navigating = true;
+  });
+  document.addEventListener("yt-navigate-finish", () => {
+    navigating = false;
+    applyToAllVideos();
+    schedulePositionUpdate();
+  });
 
   function updateButton() {
     const current = formatRate(currentRate);
@@ -126,18 +149,38 @@
     speedLabel.textContent = current;
     button.title = `DopaTube: 再生速度 ${current} 倍（クリックで ${next} 倍）`;
     button.setAttribute("aria-label", button.title);
+    const actions = {
+      cycle: `クリックで ${next} 倍`,
+      reset: "クリックで 1.0 倍に戻す",
+      none: "クリック動作なし"
+    };
+    logoFrame.title = `DopaTube: ${actions[settings.logoAction]}`;
+    logoFrame.setAttribute("aria-label", logoFrame.title);
+    logoFrame.disabled = settings.logoAction === "none";
   }
 
-  button.addEventListener("click", () => {
-    currentRate = nextRate();
+  function setRate(rate) {
+    currentRate = rate;
     updateButton();
     applyToAllVideos();
+    schedulePositionUpdate();
+  }
+
+  button.addEventListener("click", () => setRate(nextRate()));
+  logoFrame.addEventListener("click", () => {
+    if (settings.logoAction === "cycle") {
+      setRate(nextRate());
+    } else if (settings.logoAction === "reset") {
+      setRate(1);
+    }
   });
 
   // Media events do not bubble, so use capture to handle new and reused players.
-  for (const eventName of ["loadedmetadata", "play"]) {
+  for (const eventName of ["loadedmetadata", "play", "playing"]) {
     document.addEventListener(eventName, (event) => {
-      if (event.target instanceof HTMLVideoElement) {
+      if (event.target instanceof HTMLVideoElement && isPlaybackVideo(event.target, true)) {
+        // Cached navigation can start playback before yt-navigate-finish arrives.
+        navigating = false;
         applyPlaybackRate(event.target);
       }
     }, true);
@@ -148,7 +191,15 @@
     if (!(event.target instanceof HTMLVideoElement)) {
       return;
     }
-    const rate = event.target.playbackRate;
+    const video = event.target;
+    if (!isPlaybackVideo(video)) {
+      return;
+    }
+    const rect = video.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) {
+      return;
+    }
+    const rate = video.playbackRate;
     if (!Number.isFinite(rate) || rate <= 0 || rate === currentRate) {
       return;
     }
@@ -179,6 +230,29 @@
   updateButton();
   insertButton();
   applyToAllVideos();
+
+  function updateSettings(value) {
+    settings = normalize(value);
+    updateButton();
+    schedulePositionUpdate();
+  }
+
+  // Do not change the playing speed when preferences are edited in another tab.
+  let settingsRevision = 0;
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === "local" && Object.hasOwn(changes, storageKey)) {
+      settingsRevision += 1;
+      updateSettings(changes[storageKey].newValue);
+    }
+  });
+  const initialRevision = settingsRevision;
+  chrome.storage.local.get(storageKey).then((stored) => {
+    if (settingsRevision === initialRevision) {
+      updateSettings(stored[storageKey]);
+    }
+  }).catch(() => {
+    console.warn("DopaTube: 設定を読み込めないため初期設定を使用します。");
+  });
 
   // Watch the page for new videos and header replacement, not layout updates.
   const observer = new MutationObserver((records) => {

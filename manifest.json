@@ -1,8 +1,13 @@
 {
   "manifest_version": 3,
   "name": "DopaTube",
-  "version": "0.2.0",
-  "description": "YouTube のヘッダーから、動画の再生速度を 1.0・1.5・2.0 倍にワンクリックで切り替えます。",
+  "version": "1.0.0",
+  "description": "YouTube のヘッダーから再生速度をワンクリックで切り替え。2〜5個の速度とロゴのクリック動作を設定できます。",
+  "permissions": ["storage"],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
   "icons": {
     "16": "assets/icons/icon-16.png",
     "32": "assets/icons/icon-32.png",
@@ -20,7 +25,7 @@
   "content_scripts": [
     {
       "matches": ["https://www.youtube.com/*"],
-      "js": ["content.js"],
+      "js": ["settings.js", "content.js"],
       "css": ["content.css"],
       "run_at": "document_idle"
     }
