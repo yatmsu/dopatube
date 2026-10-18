@@ -85,8 +85,16 @@ async function loadContent(stored = valid([1, 1.5, 2]), rejectRead = false) {
       return element;
     },
     querySelectorAll: () => videos, documentElement: {},
-    addEventListener(name, fn) { (handlers[name] ??= []).push(fn); }
+    addEventListener(name, fn) { (handlers[name] ??= []).push(fn); },
+    dispatchEvent(event) {
+      handlers[event.type]?.forEach((fn) => fn(event));
+      return !event.defaultPrevented;
+    }
   };
+  class CustomEvent {
+    constructor(type, options) { this.type = type; Object.assign(this, options); }
+    preventDefault() { if (this.cancelable) this.defaultPrevented = true; }
+  }
   const Observer = class { observe() {} disconnect() {} };
   const context = vm.createContext({
     document, location, chrome: {
@@ -98,7 +106,7 @@ async function loadContent(stored = valid([1, 1.5, 2]), rejectRead = false) {
     },
     window: { addEventListener() {} }, console: { warn() {} },
     ResizeObserver: Observer, MutationObserver: Observer,
-    requestAnimationFrame: () => 1, HTMLVideoElement: Video
+    requestAnimationFrame: () => 1, HTMLVideoElement: Video, CustomEvent
   });
   vm.runInContext(source("settings.js"), context);
   vm.runInContext(source("content.js"), context);
@@ -108,6 +116,7 @@ async function loadContent(stored = valid([1, 1.5, 2]), rejectRead = false) {
   const change = (value) => storageListeners.forEach((fn) => fn({ settings: { newValue: value } }, "local"));
   return {
     video, button, logo, label, change, location,
+    onPlayerRequest: (listener) => document.addEventListener("dopatube-set-playback-rate", listener),
     addVideo: () => { const added = new Video(); videos.push(added); return added; },
     finishRead: async () => { resolveRead?.({ settings: stored }); await Promise.resolve(); await Promise.resolve(); },
     fire: (name, target = video) => handlers[name]?.forEach((fn) => fn({ target }))
@@ -274,4 +283,60 @@ test("applies the selected speed when cached playback starts before navigation f
     app.fire("ratechange");
     assert.equal(app.label.textContent, "1.25", event);
   }
+});
+
+test("requests the native player state update, including custom speed steps", async () => {
+  const app = await loadContent(valid([1, 1.05, 1.25]));
+  await app.finishRead();
+  const requests = [];
+  app.onPlayerRequest((event) => {
+    requests.push(event.detail);
+    app.video.playbackRate = event.detail;
+    event.preventDefault();
+  });
+  app.button.listeners.click();
+  assert.equal(app.video.playbackRate, 1.05);
+  assert.deepEqual(requests, [1.05]);
+  app.location.pathname = "/";
+  app.button.listeners.click();
+  assert.deepEqual(requests, [1.05], "home previews must not receive requests");
+});
+
+test("page adapter updates the correct native player and rejects untrusted payloads", () => {
+  let handle;
+  let rate = 1;
+  let calls = 0;
+  let selector;
+  const location = { pathname: "/watch" };
+  const player = {
+    getPlaybackRate: () => rate,
+    setPlaybackRate(value) { rate = value; calls += 1; }
+  };
+  const document = {
+    addEventListener(name, fn) { assert.equal(name, "dopatube-set-playback-rate"); handle = fn; },
+    querySelector(value) { selector = value; return player; }
+  };
+  vm.runInNewContext(source("player.js"), { document, location });
+  const send = (detail) => {
+    const event = { detail, preventDefault() { this.accepted = true; } };
+    handle(event);
+    return event.accepted;
+  };
+  assert.equal(send(1.05), true);
+  assert.equal(rate, 1.05);
+  assert.equal(selector, "#movie_player");
+  assert.equal(send(1.05), true);
+  assert.equal(calls, 1, "do not reapply an unchanged native rate");
+  for (const value of ["2", null, {}, NaN, Infinity, 0, 4.05]) {
+    assert.equal(send(value), undefined);
+  }
+  assert.equal(calls, 1);
+  location.pathname = "/";
+  assert.equal(send(2), undefined);
+  assert.equal(calls, 1);
+  location.pathname = "/shorts/example";
+  assert.equal(send(2), true);
+  assert.equal(selector, "#shorts-player");
+  player.setPlaybackRate = () => { throw Error("player unavailable"); };
+  assert.equal(send(1), undefined);
 });

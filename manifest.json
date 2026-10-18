@@ -25,6 +25,12 @@
   "content_scripts": [
     {
       "matches": ["https://www.youtube.com/*"],
+      "js": ["player.js"],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://www.youtube.com/*"],
       "js": ["settings.js", "content.js"],
       "css": ["content.css"],
       "run_at": "document_idle"

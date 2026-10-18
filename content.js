@@ -33,6 +33,14 @@
     if (video.defaultPlaybackRate !== rate) {
       video.defaultPlaybackRate = rate;
     }
+    // Update YouTube's menu state through the page-context player adapter.
+    const request = new CustomEvent("dopatube-set-playback-rate", {
+      detail: rate,
+      cancelable: true
+    });
+    if (!document.dispatchEvent(request)) {
+      return;
+    }
     if (video.playbackRate !== rate) {
       video.playbackRate = rate;
     }

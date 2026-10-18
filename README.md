@@ -28,6 +28,7 @@ The default speed is `1.0×`. Reloading the page or opening a new tab resets the
 Each tab maintains its own current speed. The current speed is neither saved nor synced across tabs.
 
 YouTube's built-in speed controls also work. DopaTube displays the speed you select, including values such as `1.25×`.
+Changes made with DopaTube also update the playback speed shown in YouTube's settings menu.
 Clicking the number advances to the next entry in your configured cycle. If the current speed is not in the cycle, the next click selects the first higher speed in the configured order, or the first entry if none is higher.
 
 ### Settings
@@ -52,6 +53,7 @@ See the [Privacy Policy](PRIVACY.md) for details.
 
 Built with Manifest V3 and HTML, CSS, and JavaScript.
 No dependency installation or build step is required.
+`player.js` runs in the page context to update YouTube's native player state. Settings and extension APIs remain in the isolated content script; the adapter accepts only a numeric playback speed and does not access extension storage.
 
 ### Install from source
 
