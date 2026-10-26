@@ -1,0 +1,146 @@
+{
+  "extensionDescription": {
+    "message": "Change YouTube playback speed from the header with one click. Customize a cycle of 2–5 speeds and the logo click action."
+  },
+  "intro": {
+    "message": "Change YouTube playback speed with one click."
+  },
+  "usageTitle": {
+    "message": "How to use"
+  },
+  "usageHelp": {
+    "message": "Click the numbered button between the YouTube logo and the search box."
+  },
+  "loadingCycle": {
+    "message": "Loading settings…"
+  },
+  "speedPersistence": {
+    "message": "The number shows the playback speed. It stays the same when switching videos and resets to 1.0× when you reload the page."
+  },
+  "settingsHelp": {
+    "message": "In settings, choose 2–5 speeds in 0.05× increments. Clicking the “ド” logo can advance to the next speed, reset to 1.0×, or do nothing."
+  },
+  "nativeHelp": {
+    "message": "YouTube’s built-in speed controls also work. The button reflects the speed you select."
+  },
+  "openSettings": {
+    "message": "Open settings"
+  },
+  "openYouTube": {
+    "message": "Open YouTube"
+  },
+  "privacySummary": {
+    "message": "No personal information or watch history is collected or sent to external servers."
+  },
+  "unofficial": {
+    "message": "Not an official YouTube or Google product."
+  },
+  "versionLabel": {
+    "message": "Version"
+  },
+  "optionsTitle": {
+    "message": "Settings — DopaTube"
+  },
+  "settingsTitle": {
+    "message": "Settings"
+  },
+  "speedsTitle": {
+    "message": "Playback speed cycle"
+  },
+  "speedsHelp": {
+    "message": "Choose 2–5 speeds from 0.25× to 4.0× in 0.05× increments. Speeds cycle from top to bottom, then return to the first entry."
+  },
+  "addSpeed": {
+    "message": "Add speed"
+  },
+  "logoTitle": {
+    "message": "When clicking the “ド” logo"
+  },
+  "actionCycle": {
+    "message": "Next speed (default)"
+  },
+  "actionReset": {
+    "message": "Reset to 1.0×"
+  },
+  "actionNone": {
+    "message": "Do nothing"
+  },
+  "numberHelp": {
+    "message": "Clicking the number always advances to the next speed."
+  },
+  "save": {
+    "message": "Save"
+  },
+  "restoreDefaults": {
+    "message": "Restore defaults"
+  },
+  "loadingSettings": {
+    "message": "Loading settings…"
+  },
+  "settingsFooter": {
+    "message": "Preferences are saved on this device and applied to open YouTube tabs. Saving does not change the current playback speed."
+  },
+  "errorSpeedCount": {
+    "message": "Choose between 2 and 5 playback speeds."
+  },
+  "errorSpeedRange": {
+    "message": "Enter playback speeds from 0.25× to 4.0×."
+  },
+  "errorSpeedStep": {
+    "message": "Enter playback speeds in 0.05× increments."
+  },
+  "errorSpeedDuplicate": {
+    "message": "Each playback speed must be unique."
+  },
+  "errorLogoAction": {
+    "message": "Choose an action for the “ド” logo."
+  },
+  "errorOpenSettings": {
+    "message": "Could not open settings. Close and reopen the popup."
+  },
+  "errorLoadCycle": {
+    "message": "Could not load settings."
+  },
+  "speedEntry": {
+    "message": "Speed $1"
+  },
+  "removeSpeedLabel": {
+    "message": "Remove speed $1"
+  },
+  "cyclePreview": {
+    "message": "Cycle: $1 ×"
+  },
+  "unsavedChanges": {
+    "message": "You have unsaved changes."
+  },
+  "speedUnit": {
+    "message": "×"
+  },
+  "remove": {
+    "message": "Remove"
+  },
+  "defaultsSaved": {
+    "message": "Defaults restored and saved."
+  },
+  "settingsSaved": {
+    "message": "Saved. Preferences also apply to open YouTube tabs."
+  },
+  "errorSaveSettings": {
+    "message": "Could not save settings. Please try again."
+  },
+  "errorLoadSettings": {
+    "message": "Could not load settings. Please reload this page."
+  },
+  "speedButtonTitle": {
+    "message": "DopaTube: Playback speed $1× (click for $2×)"
+  },
+  "logoCycleTitle": {
+    "message": "DopaTube: Click for $1×"
+  },
+  "logoResetTitle": {
+    "message": "DopaTube: Click to reset to 1.0×"
+  },
+  "logoNoneTitle": {
+    "message": "DopaTube: No click action"
+  }
+}

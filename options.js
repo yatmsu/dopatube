@@ -24,20 +24,20 @@
       const input = row.querySelector("input");
       input.id = `speed-${index}`;
       row.querySelector("label").htmlFor = input.id;
-      row.querySelector("label").textContent = `${index + 1}番目`;
+      row.querySelector("label").textContent = chrome.i18n.getMessage("speedEntry", String(index + 1));
       const remove = row.querySelector("button");
       remove.disabled = rows.length <= 2;
-      remove.setAttribute("aria-label", `${index + 1}番目の速度を削除`);
+      remove.setAttribute("aria-label", chrome.i18n.getMessage("removeSpeedLabel", String(index + 1)));
     });
     add.disabled = rows.length >= 5;
     const settings = readForm();
-    preview.textContent = validate(settings) ? "" : `ループ：${[...settings.speeds, settings.speeds[0]].map(formatRate).join(" → ")} 倍`;
+    preview.textContent = validate(settings) ? "" : chrome.i18n.getMessage("cyclePreview", [...settings.speeds, settings.speeds[0]].map(formatRate).join(" → "));
   }
 
   function markDirty() {
     dirty = true;
     error.textContent = "";
-    status.textContent = "未保存の変更があります。";
+    status.textContent = chrome.i18n.getMessage("unsavedChanges");
     refresh();
   }
 
@@ -54,11 +54,11 @@
     input.setAttribute("aria-describedby", "speeds-help");
     input.value = String(value);
     const unit = document.createElement("span");
-    unit.textContent = "倍";
+    unit.textContent = chrome.i18n.getMessage("speedUnit");
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "secondary";
-    remove.textContent = "削除";
+    remove.textContent = chrome.i18n.getMessage("remove");
     remove.addEventListener("click", () => {
       if (busy || list.children.length <= 2) return;
       const index = Array.from(list.children).indexOf(row);
@@ -106,9 +106,9 @@
       await chrome.storage.local.set({ [storageKey]: value });
       render(value);
       dirty = false;
-      status.textContent = resetToDefaults ? "初期設定に戻して保存しました。" : "保存しました。開いているYouTubeにも反映されます。";
+      status.textContent = resetToDefaults ? chrome.i18n.getMessage("defaultsSaved") : chrome.i18n.getMessage("settingsSaved");
     } catch {
-      error.textContent = "設定を保存できませんでした。もう一度お試しください。";
+      error.textContent = chrome.i18n.getMessage("errorSaveSettings");
     } finally {
       busy = false;
       fields.disabled = false;
@@ -134,7 +134,7 @@
     fields.disabled = false;
     status.textContent = "";
   }).catch(() => {
-    error.textContent = "設定を読み込めませんでした。ページを再読み込みしてください。";
+    error.textContent = chrome.i18n.getMessage("errorLoadSettings");
     status.textContent = "";
   });
 })();

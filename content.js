@@ -155,14 +155,14 @@
     const next = formatRate(nextRate());
 
     speedLabel.textContent = current;
-    button.title = `DopaTube: 再生速度 ${current} 倍（クリックで ${next} 倍）`;
+    button.title = chrome.i18n.getMessage("speedButtonTitle", [current, next]);
     button.setAttribute("aria-label", button.title);
     const actions = {
-      cycle: `クリックで ${next} 倍`,
-      reset: "クリックで 1.0 倍に戻す",
-      none: "クリック動作なし"
+      cycle: "logoCycleTitle",
+      reset: "logoResetTitle",
+      none: "logoNoneTitle"
     };
-    logoFrame.title = `DopaTube: ${actions[settings.logoAction]}`;
+    logoFrame.title = chrome.i18n.getMessage(actions[settings.logoAction], next);
     logoFrame.setAttribute("aria-label", logoFrame.title);
     logoFrame.disabled = settings.logoAction === "none";
   }
@@ -259,7 +259,7 @@
       updateSettings(stored[storageKey]);
     }
   }).catch(() => {
-    console.warn("DopaTube: 設定を読み込めないため初期設定を使用します。");
+    console.warn("DopaTube: Could not load settings; using defaults.");
   });
 
   // Watch the page for new videos and header replacement, not layout updates.

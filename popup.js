@@ -6,7 +6,7 @@ document.getElementById("open-settings").addEventListener("click", async () => {
   try {
     await chrome.runtime.openOptionsPage();
   } catch {
-    document.getElementById("settings-error").textContent = "設定画面を開けませんでした。ポップアップを開き直してください。";
+    document.getElementById("settings-error").textContent = chrome.i18n.getMessage("errorOpenSettings");
   }
 });
 
@@ -16,7 +16,7 @@ function showCycle(value) {
   document.getElementById("speed-cycle").textContent = [...speeds, speeds[0]].map(formatRate).join(" → ");
 }
 chrome.storage.local.get(storageKey).then((stored) => showCycle(stored[storageKey])).catch(() => {
-  document.getElementById("speed-cycle").textContent = "設定を読み込めませんでした。";
+  document.getElementById("speed-cycle").textContent = chrome.i18n.getMessage("errorLoadCycle");
 });
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && Object.hasOwn(changes, storageKey)) {

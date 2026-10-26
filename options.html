@@ -1,10 +1,11 @@
 <!doctype html>
-<html lang="ja">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>設定 — DopaTube</title>
+    <title data-i18n="optionsTitle">Settings — DopaTube</title>
     <link rel="stylesheet" href="options.css" />
+    <script src="localize.js" defer></script>
     <script src="settings.js" defer></script>
     <script src="options.js" defer></script>
   </head>
@@ -12,33 +13,33 @@
     <main>
       <header>
         <img src="assets/icons/icon-48.png" width="48" height="48" alt="" />
-        <div><p class="brand">DopaTube</p><h1>設定</h1></div>
+        <div><p class="brand">DopaTube</p><h1 data-i18n="settingsTitle">Settings</h1></div>
       </header>
       <form id="settings-form" novalidate>
         <fieldset id="settings-fields" disabled>
           <section aria-labelledby="speeds-title">
-            <h2 id="speeds-title">再生速度のループ</h2>
-            <p id="speeds-help">2〜5個の速度を、0.25〜4.0倍・0.05倍刻みで設定できます。上から順に切り替わり、最後から先頭へ戻ります。</p>
+            <h2 id="speeds-title" data-i18n="speedsTitle">Playback speed cycle</h2>
+            <p id="speeds-help" data-i18n="speedsHelp">Choose 2–5 speeds from 0.25× to 4.0× in 0.05× increments. Speeds cycle from top to bottom, then return to the first entry.</p>
             <div id="speed-list"></div>
-            <button type="button" id="add-speed" class="secondary">速度を追加</button>
+            <button type="button" id="add-speed" class="secondary" data-i18n="addSpeed">Add speed</button>
             <p id="cycle-preview" class="preview" aria-live="polite"></p>
           </section>
           <section aria-labelledby="logo-title">
-            <h2 id="logo-title">「ド」をクリックしたとき</h2>
-            <label class="choice"><input type="radio" name="logo-action" value="cycle" />次の速度へ切り替える（初期設定）</label>
-            <label class="choice"><input type="radio" name="logo-action" value="reset" />1.0倍に戻す</label>
-            <label class="choice"><input type="radio" name="logo-action" value="none" />何もしない</label>
-            <p class="hint">数字部分のクリックは、どの設定でも次の速度へ切り替わります。</p>
+            <h2 id="logo-title" data-i18n="logoTitle">When clicking the “ド” logo</h2>
+            <label class="choice"><input type="radio" name="logo-action" value="cycle" /><span data-i18n="actionCycle">Next speed (default)</span></label>
+            <label class="choice"><input type="radio" name="logo-action" value="reset" /><span data-i18n="actionReset">Reset to 1.0×</span></label>
+            <label class="choice"><input type="radio" name="logo-action" value="none" /><span data-i18n="actionNone">Do nothing</span></label>
+            <p class="hint" data-i18n="numberHelp">Clicking the number always advances to the next speed.</p>
           </section>
           <div class="actions">
-            <button type="submit" class="primary">保存</button>
-            <button type="button" id="reset-settings" class="secondary">初期設定に戻す</button>
+            <button type="submit" class="primary" data-i18n="save">Save</button>
+            <button type="button" id="reset-settings" class="secondary" data-i18n="restoreDefaults">Restore defaults</button>
           </div>
         </fieldset>
         <p id="error-message" role="alert"></p>
-        <p id="status-message" role="status" aria-live="polite">設定を読み込んでいます…</p>
+        <p id="status-message" role="status" aria-live="polite" data-i18n="loadingSettings">Loading settings…</p>
       </form>
-      <footer>設定はこの端末内に保存され、開いているYouTubeにも反映されます。保存操作では再生中の速度は変わりません。</footer>
+      <footer data-i18n="settingsFooter">Preferences are saved on this device and applied to open YouTube tabs. Saving does not change the current playback speed.</footer>
     </main>
   </body>
 </html>

@@ -3,11 +3,12 @@ const { readFileSync } = require("node:fs");
 const { resolve } = require("node:path");
 const { test } = require("node:test");
 const vm = require("node:vm");
+const { createI18n } = require("./i18n-helper.cjs");
 const root = resolve(__dirname, "..");
 const source = (name) => readFileSync(resolve(root, name), "utf8");
 
 function loadSettings() {
-  const context = vm.createContext({});
+  const context = vm.createContext({ chrome: { i18n: createI18n() } });
   vm.runInContext(source("settings.js"), context);
   return context.DopaTubeSettings;
 }
@@ -50,7 +51,7 @@ test("handles decimal rounding without rejecting 0.05 increments", () => {
   assert.equal(settings.formatRate(1.05), "1.05");
 });
 
-async function loadContent(stored = valid([1, 1.5, 2]), rejectRead = false) {
+async function loadContent(stored = valid([1, 1.5, 2]), rejectRead = false, locale = "en") {
   const elements = [], handlers = {}, storageListeners = [];
   const location = { pathname: "/watch" };
   let resolveRead;
@@ -98,6 +99,7 @@ async function loadContent(stored = valid([1, 1.5, 2]), rejectRead = false) {
   const Observer = class { observe() {} disconnect() {} };
   const context = vm.createContext({
     document, location, chrome: {
+      i18n: createI18n(locale),
       runtime: { getURL: (path) => path },
       storage: {
         onChanged: { addListener(fn) { storageListeners.push(fn); } },
@@ -340,3 +342,17 @@ test("page adapter updates the correct native player and rejects untrusted paylo
   player.setPlaybackRate = () => { throw Error("player unavailable"); };
   assert.equal(send(1), undefined);
 });
+
+for (const locale of ["en", "ja"]) {
+  test(`localizes header tooltips and logo actions in ${locale}`, async () => {
+    const i18n = createI18n(locale);
+    const app = await loadContent(valid([1, 1.25]), false, locale);
+    await app.finishRead();
+    assert.equal(app.button.title, i18n.getMessage("speedButtonTitle", ["1.0", "1.25"]));
+    assert.equal(app.logo.title, i18n.getMessage("logoCycleTitle", "1.25"));
+    app.change(valid([1, 1.25], "reset"));
+    assert.equal(app.logo.title, i18n.getMessage("logoResetTitle"));
+    app.change(valid([1, 1.25], "none"));
+    assert.equal(app.logo.title, i18n.getMessage("logoNoneTitle"));
+  });
+}

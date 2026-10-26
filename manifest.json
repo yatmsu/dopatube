@@ -2,7 +2,8 @@
   "manifest_version": 3,
   "name": "DopaTube",
   "version": "1.0.1",
-  "description": "YouTube のヘッダーから再生速度をワンクリックで切り替え。2〜5個の速度とロゴのクリック動作を設定できます。",
+  "description": "__MSG_extensionDescription__",
+  "default_locale": "en",
   "permissions": ["storage"],
   "options_ui": {
     "page": "options.html",

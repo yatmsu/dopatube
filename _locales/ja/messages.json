@@ -1,0 +1,146 @@
+{
+  "extensionDescription": {
+    "message": "YouTube のヘッダーから再生速度をワンクリックで切り替え。2〜5個の速度とロゴのクリック動作を設定できます。"
+  },
+  "intro": {
+    "message": "YouTube の再生速度を、ワンクリックで。"
+  },
+  "usageTitle": {
+    "message": "使い方"
+  },
+  "usageHelp": {
+    "message": "YouTube のロゴと検索ボックスの間にある、数字のボタンをクリックしてください。"
+  },
+  "loadingCycle": {
+    "message": "設定を読み込み中…"
+  },
+  "speedPersistence": {
+    "message": "表示中の数字が再生速度です。動画を切り替えても維持し、ページを再読み込みすると 1.0 倍に戻ります。"
+  },
+  "settingsHelp": {
+    "message": "設定画面で2〜5個の速度を0.05倍刻みで登録できます。「ド」の動作は、次の速度へ切り替える・1.0倍に戻す・何もしない、から選べます。"
+  },
+  "nativeHelp": {
+    "message": "YouTube 標準の速度設定も利用できます。変更した速度はボタンに反映されます。"
+  },
+  "openSettings": {
+    "message": "設定を開く"
+  },
+  "openYouTube": {
+    "message": "YouTube を開く"
+  },
+  "privacySummary": {
+    "message": "個人情報や視聴履歴の収集・外部送信は行いません。"
+  },
+  "unofficial": {
+    "message": "YouTube / Google の公式製品ではありません。"
+  },
+  "versionLabel": {
+    "message": "バージョン"
+  },
+  "optionsTitle": {
+    "message": "設定 — DopaTube"
+  },
+  "settingsTitle": {
+    "message": "設定"
+  },
+  "speedsTitle": {
+    "message": "再生速度のループ"
+  },
+  "speedsHelp": {
+    "message": "2〜5個の速度を、0.25〜4.0倍・0.05倍刻みで設定できます。上から順に切り替わり、最後から先頭へ戻ります。"
+  },
+  "addSpeed": {
+    "message": "速度を追加"
+  },
+  "logoTitle": {
+    "message": "「ド」をクリックしたとき"
+  },
+  "actionCycle": {
+    "message": "次の速度へ切り替える（初期設定）"
+  },
+  "actionReset": {
+    "message": "1.0倍に戻す"
+  },
+  "actionNone": {
+    "message": "何もしない"
+  },
+  "numberHelp": {
+    "message": "数字部分のクリックは、どの設定でも次の速度へ切り替わります。"
+  },
+  "save": {
+    "message": "保存"
+  },
+  "restoreDefaults": {
+    "message": "初期設定に戻す"
+  },
+  "loadingSettings": {
+    "message": "設定を読み込んでいます…"
+  },
+  "settingsFooter": {
+    "message": "設定はこの端末内に保存され、開いているYouTubeにも反映されます。保存操作では再生中の速度は変わりません。"
+  },
+  "errorSpeedCount": {
+    "message": "再生速度は2〜5個で設定してください。"
+  },
+  "errorSpeedRange": {
+    "message": "再生速度は0.25〜4.0倍で入力してください。"
+  },
+  "errorSpeedStep": {
+    "message": "再生速度は0.05倍刻みで入力してください。"
+  },
+  "errorSpeedDuplicate": {
+    "message": "同じ再生速度を重複して登録できません。"
+  },
+  "errorLogoAction": {
+    "message": "「ド」の動作を選択してください。"
+  },
+  "errorOpenSettings": {
+    "message": "設定画面を開けませんでした。ポップアップを開き直してください。"
+  },
+  "errorLoadCycle": {
+    "message": "設定を読み込めませんでした。"
+  },
+  "speedEntry": {
+    "message": "$1番目"
+  },
+  "removeSpeedLabel": {
+    "message": "$1番目の速度を削除"
+  },
+  "cyclePreview": {
+    "message": "ループ：$1 倍"
+  },
+  "unsavedChanges": {
+    "message": "未保存の変更があります。"
+  },
+  "speedUnit": {
+    "message": "倍"
+  },
+  "remove": {
+    "message": "削除"
+  },
+  "defaultsSaved": {
+    "message": "初期設定に戻して保存しました。"
+  },
+  "settingsSaved": {
+    "message": "保存しました。開いているYouTubeにも反映されます。"
+  },
+  "errorSaveSettings": {
+    "message": "設定を保存できませんでした。もう一度お試しください。"
+  },
+  "errorLoadSettings": {
+    "message": "設定を読み込めませんでした。ページを再読み込みしてください。"
+  },
+  "speedButtonTitle": {
+    "message": "DopaTube: 再生速度 $1 倍（クリックで $2 倍）"
+  },
+  "logoCycleTitle": {
+    "message": "DopaTube: クリックで $1 倍"
+  },
+  "logoResetTitle": {
+    "message": "DopaTube: クリックで 1.0 倍に戻す"
+  },
+  "logoNoneTitle": {
+    "message": "DopaTube: クリック動作なし"
+  }
+}

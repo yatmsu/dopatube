@@ -6,6 +6,7 @@ A Chrome extension that lets you change YouTube playback speed with a single cli
 
 ## Features
 
+- Supports Japanese and English, following Chrome’s display language (English fallback).
 - Adds a playback speed button between the YouTube logo and the search box.
 - Cycles through **1.0× → 1.5× → 2.0× → 1.0×** by default.
 - Supports 2–5 custom speeds from 0.25× to 4.0× in 0.05× increments, in your chosen order.
@@ -33,11 +34,11 @@ Clicking the number advances to the next entry in your configured cycle. If the 
 
 ### Settings
 
-Open the extension popup and click **設定を開く** (Open settings). Add or remove speed entries to keep 2–5 distinct values, in 0.05× increments between 0.25× and 4.0×. Entries cycle from top to bottom; edit the values to change the order.
+Open the extension popup and click **Open settings**. Add or remove speed entries to keep 2–5 distinct values, in 0.05× increments between 0.25× and 4.0×. Entries cycle from top to bottom; edit the values to change the order.
 
 Choose the logo click action: advance to the next speed (default), reset to 1.0×, or do nothing. The number always advances the cycle. Resetting to 1.0× works even when 1.0× is not in the cycle.
 
-Click **保存** (Save) to apply preferences to open YouTube tabs without changing their current playback speed. Preferences are stored locally and survive browser restarts. **初期設定に戻す** (Restore defaults) immediately saves the default cycle and logo action.
+Click **Save** to apply preferences to open YouTube tabs without changing their current playback speed. Preferences are stored locally and survive browser restarts. **Restore defaults** immediately saves the default cycle and logo action.
 
 ## Privacy and Site Access
 
@@ -76,7 +77,13 @@ Close and reopen the popup to see changes to it.
 
 ### Tests
 
-Run `node --test tests/*.test.cjs` to check settings validation, speed cycling, and content script behavior.
+Run `node --test tests/*.test.cjs` to check settings validation, speed cycling, and content script behavior, and Japanese/English localization.
+
+### Localization
+
+User-facing text is stored in `_locales/en/messages.json` and `_locales/ja/messages.json` and resolved with `chrome.i18n`. English is the default locale. To add a language, translate the English catalog into a new locale directory and keep message keys and numbered substitutions consistent.
+
+Store listing drafts are in [docs/store-listing.md](docs/store-listing.md). Updating these files does not update the published Chrome Web Store listing; copy the text into the developer dashboard.
 
 ## Support
 
