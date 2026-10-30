@@ -15,6 +15,7 @@ A Chrome extension that lets you change YouTube playback speed with a single cli
 - Centers the logo and speed control between the YouTube logo and the search box as the window resizes.
 
 Works on `https://www.youtube.com/` in desktop Chrome.
+Playback speed changes apply to the main player on watch pages (`/watch`) and Shorts pages (`/shorts/…`). Home/feed previews and inline previews are left unchanged.
 
 ## Installation
 
@@ -38,7 +39,7 @@ Open the extension popup and click **Open settings**. Add or remove speed entrie
 
 Choose the logo click action: advance to the next speed (default), reset to 1.0×, or do nothing. The number always advances the cycle. Resetting to 1.0× works even when 1.0× is not in the cycle.
 
-Click **Save** to apply preferences to open YouTube tabs without changing their current playback speed. Preferences are stored locally and survive browser restarts. **Restore defaults** immediately saves the default cycle and logo action.
+Click **Save** to apply preferences to open YouTube tabs without changing their current playback speed. Preferences are shared by tabs using the same DopaTube installation in the same Chrome profile, stored locally, and retained across browser restarts. **Restore defaults** immediately saves the default cycle and logo action.
 
 ## Privacy and Site Access
 
@@ -54,7 +55,7 @@ See the [Privacy Policy](PRIVACY.md) for details.
 
 Built with Manifest V3 and HTML, CSS, and JavaScript.
 No dependency installation or build step is required.
-`player.js` runs in the page context to update YouTube's native player state. Settings and extension APIs remain in the isolated content script; the adapter accepts only a numeric playback speed and does not access extension storage.
+`player.js` runs in the page context to update YouTube's native player state. The content script runs in an isolated world, while the popup and options page run as extension pages. The page-context adapter accepts only a finite numeric playback speed from 0.25× to 4.0× and does not access extension storage. If the native player API is unavailable or does not confirm the change, the content script falls back to setting the video element's playback speed directly.
 
 ### Install from source
 
@@ -77,13 +78,17 @@ Close and reopen the popup to see changes to it.
 
 ### Tests
 
-Run `node --test tests/*.test.cjs` to check settings validation, speed cycling, and content script behavior, and Japanese/English localization.
+With Node.js installed, run `node --test tests/*.test.cjs` to check settings validation, speed cycling, content script behavior, and Japanese/English localization.
+
+These tests use simulated browser and Chrome APIs. Check the actual popup, settings page, header layout, video speed, and YouTube speed menu in Chrome separately; the automated tests do not verify the live YouTube interface or visual layout.
 
 ### Localization
 
-User-facing text is stored in `_locales/en/messages.json` and `_locales/ja/messages.json` and resolved with `chrome.i18n`. English is the default locale. To add a language, translate the English catalog into a new locale directory and keep message keys and numbered substitutions consistent.
+User-facing text is stored in `_locales/en/messages.json` and `_locales/ja/messages.json` and resolved with `chrome.i18n`. English is the default locale.
 
-Store listing drafts are in [docs/store-listing.md](docs/store-listing.md). Updating these files does not update the published Chrome Web Store listing; copy the text into the developer dashboard.
+To add a language, translate the English catalog into a new supported locale directory and keep message keys and numbered substitutions consistent. Also update the language selection in `localize.js`, which currently sets the document language to Japanese or English, and extend the locale handling and checks in `tests/i18n-helper.cjs` and `tests/i18n.test.cjs`.
+
+Chrome Web Store descriptions and screenshots are managed separately in the developer dashboard. Updating the extension's translation files does not update the detailed store descriptions or screenshots.
 
 ## Support
 
