@@ -11,7 +11,7 @@
       return false;
     }
     // YouTube can reuse #movie_player for a 0.4x preview on the home page.
-    if (location.pathname === "/watch") {
+    if (location.pathname === "/watch" || location.pathname.startsWith("/live/")) {
       return Boolean(video.closest("#movie_player"));
     }
     if (location.pathname.startsWith("/shorts/")) {

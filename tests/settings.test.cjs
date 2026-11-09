@@ -51,9 +51,9 @@ test("handles decimal rounding without rejecting 0.05 increments", () => {
   assert.equal(settings.formatRate(1.05), "1.05");
 });
 
-async function loadContent(stored = valid([1, 1.5, 2]), rejectRead = false, locale = "en") {
+async function loadContent(stored = valid([1, 1.5, 2]), rejectRead = false, locale = "en", pathname = "/watch") {
   const elements = [], handlers = {}, storageListeners = [];
-  const location = { pathname: "/watch" };
+  const location = { pathname };
   let resolveRead;
   class Video {
     constructor() {
@@ -339,6 +339,14 @@ test("page adapter updates the correct native player and rejects untrusted paylo
   location.pathname = "/shorts/example";
   assert.equal(send(2), true);
   assert.equal(selector, "#shorts-player");
+  location.pathname = "/live/DTRzb4tWeOA";
+  assert.equal(send(1.5), true);
+  assert.equal(rate, 1.5);
+  assert.equal(selector, "#movie_player");
+  location.pathname = "/@example/live";
+  assert.equal(send(2), undefined);
+  assert.equal(rate, 1.5);
+  location.pathname = "/live/DTRzb4tWeOA";
   player.setPlaybackRate = () => { throw Error("player unavailable"); };
   assert.equal(send(1), undefined);
 });
@@ -356,3 +364,48 @@ for (const locale of ["en", "ja"]) {
     assert.equal(app.logo.title, i18n.getMessage("logoNoneTitle"));
   });
 }
+
+test("controls a live archive opened directly without affecting its inline preview", async () => {
+  const app = await loadContent(valid([1, 1.5, 2]), false, "en", "/live/DTRzb4tWeOA");
+  await app.finishRead();
+  const preview = app.addVideo();
+  preview.preview = true;
+  preview.playbackRate = 0.4;
+  for (const rate of [1.5, 2, 1]) {
+    app.button.listeners.click();
+    assert.equal(app.video.playbackRate, rate);
+    assert.equal(app.video.defaultPlaybackRate, rate);
+    assert.equal(app.label.textContent, settings.formatRate(rate));
+    assert.equal(preview.playbackRate, 0.4);
+  }
+  app.video.playbackRate = 1.25;
+  app.fire("ratechange");
+  assert.equal(app.label.textContent, "1.25", "reflect native-menu speed changes");
+});
+
+test("retains speed across live archive navigation and ignores channel live pages", async () => {
+  const app = await loadContent();
+  await app.finishRead();
+  app.button.listeners.click();
+  const requests = [];
+  app.onPlayerRequest((event) => {
+    requests.push(event.detail);
+    app.video.playbackRate = event.detail;
+    event.preventDefault();
+  });
+  app.fire("yt-navigate-start");
+  app.location.pathname = "/live/DTRzb4tWeOA";
+  app.video.playbackRate = 1;
+  app.fire("yt-navigate-finish");
+  assert.equal(app.video.playbackRate, 1.5);
+  app.button.listeners.click();
+  assert.equal(app.video.playbackRate, 2);
+  assert.deepEqual(requests, [1.5, 2]);
+  app.location.pathname = "/@example/live";
+  app.video.playbackRate = 0.4;
+  app.fire("ratechange");
+  app.fire("play");
+  assert.equal(app.video.playbackRate, 0.4);
+  assert.equal(app.label.textContent, "2.0");
+  assert.deepEqual(requests, [1.5, 2]);
+});

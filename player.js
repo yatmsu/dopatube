@@ -6,7 +6,7 @@
     if (typeof rate !== "number" || !Number.isFinite(rate) || rate < 0.25 || rate > 4) {
       return;
     }
-    const selector = location.pathname === "/watch" ? "#movie_player"
+    const selector = (location.pathname === "/watch" || location.pathname.startsWith("/live/")) ? "#movie_player"
       : location.pathname.startsWith("/shorts/") ? "#shorts-player" : null;
     if (!selector) {
       return;
