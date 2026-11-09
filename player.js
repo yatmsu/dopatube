@@ -6,12 +6,18 @@
     if (typeof rate !== "number" || !Number.isFinite(rate) || rate < 0.25 || rate > 4) {
       return;
     }
-    const selector = (location.pathname === "/watch" || location.pathname.startsWith("/live/")) ? "#movie_player"
+    const mini = document.querySelector("ytd-miniplayer #movie_player.ytp-player-minimized");
+    const miniRect = mini?.getBoundingClientRect();
+    const activeMini = miniRect?.width > 0 && miniRect.height > 0
+      && !mini.closest("#inline-preview-player");
+    const selector = (location.pathname === "/watch" || location.pathname.startsWith("/live/")
+      || location.pathname.startsWith("/clip/")) ? "#movie_player"
       : location.pathname.startsWith("/shorts/") ? "#shorts-player" : null;
-    if (!selector) {
+    const player = activeMini ? mini : selector ? document.querySelector(selector) : null;
+    if (!player || player.closest("#inline-preview-player")
+      || (!activeMini && player.closest("ytd-miniplayer"))) {
       return;
     }
-    const player = document.querySelector(selector);
     if (typeof player?.setPlaybackRate !== "function" || typeof player.getPlaybackRate !== "function") {
       return;
     }

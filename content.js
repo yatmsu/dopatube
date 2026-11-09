@@ -10,9 +10,15 @@
     if ((!allowNavigation && navigating) || video.closest("#inline-preview-player")) {
       return false;
     }
+    const player = video.closest("#movie_player");
+    if (player?.closest("ytd-miniplayer")) {
+      const rect = player.getBoundingClientRect();
+      return player.classList.contains("ytp-player-minimized") && rect.width > 0 && rect.height > 0;
+    }
     // YouTube can reuse #movie_player for a 0.4x preview on the home page.
-    if (location.pathname === "/watch" || location.pathname.startsWith("/live/")) {
-      return Boolean(video.closest("#movie_player"));
+    if (location.pathname === "/watch" || location.pathname.startsWith("/live/")
+      || location.pathname.startsWith("/clip/")) {
+      return Boolean(player);
     }
     if (location.pathname.startsWith("/shorts/")) {
       return Boolean(video.closest("#shorts-player"));

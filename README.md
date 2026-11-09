@@ -15,7 +15,7 @@ A Chrome extension that lets you change YouTube playback speed with a single cli
 - Centers the logo and speed control between the YouTube logo and the search box as the window resizes.
 
 Works on `https://www.youtube.com/` in desktop Chrome.
-Playback speed changes apply to the main player on watch pages (`/watch`), live archive pages (`/live/…`), and Shorts pages (`/shorts/…`). Home/feed previews and inline previews are left unchanged.
+Playback speed changes apply to the main player on watch pages (`/watch`), live archive pages (`/live/…`), clip pages (`/clip/…`), and Shorts pages (`/shorts/…`). The active YouTube miniplayer also remains controllable after navigating to the home page, search results, or other YouTube pages. Home/feed previews and inline previews are left unchanged.
 
 ## Installation
 

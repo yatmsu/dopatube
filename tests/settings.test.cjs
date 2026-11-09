@@ -51,7 +51,7 @@ test("handles decimal rounding without rejecting 0.05 increments", () => {
   assert.equal(settings.formatRate(1.05), "1.05");
 });
 
-async function loadContent(stored = valid([1, 1.5, 2]), rejectRead = false, locale = "en", pathname = "/watch") {
+async function loadContent(stored = valid([1, 1.5, 2]), rejectRead = false, locale = "en", pathname = "/watch", nativeAdapter = false) {
   const elements = [], handlers = {}, storageListeners = [];
   const location = { pathname };
   let resolveRead;
@@ -62,10 +62,21 @@ async function loadContent(stored = valid([1, 1.5, 2]), rejectRead = false, loca
       this.preview = false;
       this.visible = true;
       this.player = "movie_player";
+      this.inMini = false;
+      this.minimized = false;
+      this.nativeCalls = 0;
+      this.playerElement = {
+        closest: (selector) => selector === "ytd-miniplayer" ? (this.inMini ? {} : null)
+          : selector === "#inline-preview-player" ? (this.preview ? {} : null) : null,
+        classList: { contains: (name) => name === "ytp-player-minimized" && this.minimized },
+        getBoundingClientRect: () => this.getBoundingClientRect(),
+        getPlaybackRate: () => this.playbackRate,
+        setPlaybackRate: (rate) => { this.nativeCalls += 1; this.playbackRate = rate; }
+      };
     }
     closest(selector) {
       if (selector === "#inline-preview-player") return this.preview ? {} : null;
-      if (selector === "#movie_player") return this.player === "movie_player" ? {} : null;
+      if (selector === "#movie_player") return this.player === "movie_player" ? this.playerElement : null;
       if (selector === "#shorts-player") return this.player === "shorts-player" ? {} : null;
       return null;
     }
@@ -84,6 +95,12 @@ async function loadContent(stored = valid([1, 1.5, 2]), rejectRead = false, loca
       };
       elements.push(element);
       return element;
+    },
+    querySelector(selector) {
+      const video = selector === "ytd-miniplayer #movie_player.ytp-player-minimized"
+        ? videos.find((video) => video.player === "movie_player" && video.inMini && video.minimized)
+        : videos.find((video) => `#${video.player}` === selector);
+      return video?.playerElement ?? null;
     },
     querySelectorAll: () => videos, documentElement: {},
     addEventListener(name, fn) { (handlers[name] ??= []).push(fn); },
@@ -111,6 +128,7 @@ async function loadContent(stored = valid([1, 1.5, 2]), rejectRead = false, loca
     requestAnimationFrame: () => 1, HTMLVideoElement: Video, CustomEvent
   });
   vm.runInContext(source("settings.js"), context);
+  if (nativeAdapter) vm.runInContext(source("player.js"), context);
   vm.runInContext(source("content.js"), context);
   const button = elements.find((e) => e.id === "dopatube-header-toggle");
   const logo = elements.find((e) => e.className === "dopatube-logo");
@@ -311,12 +329,13 @@ test("page adapter updates the correct native player and rejects untrusted paylo
   let selector;
   const location = { pathname: "/watch" };
   const player = {
+    closest: () => null,
     getPlaybackRate: () => rate,
     setPlaybackRate(value) { rate = value; calls += 1; }
   };
   const document = {
     addEventListener(name, fn) { assert.equal(name, "dopatube-set-playback-rate"); handle = fn; },
-    querySelector(value) { selector = value; return player; }
+    querySelector(value) { if (value.startsWith("ytd-miniplayer")) return null; selector = value; return player; }
   };
   vm.runInNewContext(source("player.js"), { document, location });
   const send = (detail) => {
@@ -409,3 +428,71 @@ test("retains speed across live archive navigation and ignores channel live page
   assert.equal(app.label.textContent, "2.0");
   assert.deepEqual(requests, [1.5, 2]);
 });
+
+for (const nativeAdapter of [false, true]) {
+  test(`controls clips and ignores their previews with native adapter ${nativeAdapter}`, async () => {
+    const app = await loadContent(valid([1, 1.25, 2]), false, "en", "/clip/example", nativeAdapter);
+    await app.finishRead();
+    const preview = app.addVideo();
+    preview.preview = true;
+    preview.playbackRate = preview.defaultPlaybackRate = 0.4;
+    for (const rate of [1.25, 2, 1]) {
+      app.button.listeners.click();
+      assert.equal(app.video.playbackRate, rate);
+      assert.equal(app.label.textContent, settings.formatRate(rate));
+      assert.equal(preview.playbackRate, 0.4);
+      assert.equal(preview.defaultPlaybackRate, 0.4);
+    }
+    if (nativeAdapter) assert.ok(app.video.nativeCalls > 0, "update the native clip player");
+    assert.equal(preview.nativeCalls, 0);
+    app.video.playbackRate = 1.5;
+    app.fire("ratechange");
+    assert.equal(app.label.textContent, "1.5");
+    app.fire("yt-navigate-start");
+    app.location.pathname = "/watch";
+    app.video.playbackRate = 1;
+    app.fire("yt-navigate-finish");
+    assert.equal(app.video.playbackRate, 1.5);
+  });
+
+  test(`controls only the active miniplayer across pages with native adapter ${nativeAdapter}`, async () => {
+    const app = await loadContent(undefined, false, "en", "/watch", nativeAdapter);
+    await app.finishRead();
+    app.button.listeners.click();
+    const preview = app.addVideo();
+    preview.preview = true;
+    preview.playbackRate = preview.defaultPlaybackRate = 0.4;
+    app.video.inMini = app.video.minimized = true;
+    for (const pathname of ["/", "/results", "/@example/live", "/feed/subscriptions"]) {
+      app.fire("yt-navigate-start");
+      app.location.pathname = pathname;
+      app.video.playbackRate = 1;
+      app.fire("yt-navigate-finish");
+      assert.equal(app.video.playbackRate, 1.5);
+      app.button.listeners.click();
+      assert.equal(app.video.playbackRate, 2);
+      assert.equal(preview.playbackRate, 0.4);
+      assert.equal(preview.defaultPlaybackRate, 0.4);
+      app.video.playbackRate = 1.5;
+      app.fire("ratechange");
+      assert.equal(app.label.textContent, "1.5");
+      app.fire("ratechange", preview);
+      assert.equal(app.label.textContent, "1.5");
+    }
+    if (nativeAdapter) assert.ok(app.video.nativeCalls > 0, "update the native miniplayer");
+    assert.equal(preview.nativeCalls, 0);
+    app.video.visible = false;
+    app.button.listeners.click();
+    assert.equal(app.video.playbackRate, 1.5, "ignore a hidden miniplayer");
+    app.video.visible = true;
+    app.video.minimized = false;
+    app.button.listeners.click();
+    assert.equal(app.video.playbackRate, 1.5, "ignore an inactive miniplayer container");
+    app.video.inMini = false;
+    app.video.playbackRate = 0.4;
+    app.fire("ratechange");
+    app.button.listeners.click();
+    assert.equal(app.video.playbackRate, 0.4, "do not treat a home preview as a miniplayer");
+    assert.equal(preview.playbackRate, 0.4);
+  });
+}
