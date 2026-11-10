@@ -1,39 +1,39 @@
-# DopaTube プライバシーポリシー
+# DopaTube Privacy Policy
 
-最終更新日：2026年11月10日
+Last updated: November 10, 2026
 
-DopaTube は、YouTube のヘッダーから動画の再生速度を切り替える Chrome 拡張機能です。このポリシーでは、拡張機能による情報の取り扱いを説明します。
+DopaTube is a Chrome extension that lets you change video playback speed from the YouTube header. This policy explains how the extension handles information.
 
-## 収集しない情報
+## Information We Do Not Collect
 
-DopaTube は、氏名、メールアドレス、アカウント情報、認証情報、視聴履歴、検索履歴、閲覧履歴などの個人情報を収集、保存、外部送信しません。動画のタイトル、URL、検索語、コメントなどを記録する処理もありません。
+DopaTube does not collect, store, or transmit personal information such as names, email addresses, account information, authentication credentials, watch history, search history, or browsing history. It does not record video titles, URLs, search terms, or comments.
 
-アクセス解析、広告配信、トラッキング、外部サーバーへのデータ送信は行いません。開発者は拡張機能を通じて利用者の情報を受け取りません。情報の販売や第三者への提供も行いません。
+The extension does not use analytics, serve advertisements, track users, or send data to external servers. The developer does not receive user information through the extension. No information is sold or shared with third parties.
 
-## ページ内での処理
+## Processing Within the Page
 
-DopaTube は、`https://www.youtube.com/*` のページ内で動作します。ボタンの配置のためにヘッダーの要素と位置を参照し、再生速度を変更する対象を判別するためにページのパスとプレーヤーの表示状態を参照します。通常の動画、ライブ録画、クリップ、Shorts の本編プレーヤーと、表示中のミニプレーヤーを操作します。ホーム画面などのプレビューの速度は変更しません。
+DopaTube runs on pages matching `https://www.youtube.com/*`. It reads header elements and their positions to place its buttons, and checks the page path and player visibility to determine which player to control. It controls the main player for regular videos, live stream recordings, clips, and Shorts, as well as the visible miniplayer. It does not change the playback speed of previews on the home page or elsewhere.
 
-速度の変更は、YouTube のページ内プレーヤー API を通じて行います。プレーヤー API が利用できない場合や変更を確認できない場合は、動画要素の再生速度を直接変更します。ページ内プレーヤーへの変更要求に含める値は再生速度の数値だけで、設定データや個人情報は含めません。これらの処理は利用者のブラウザー内で行われます。
+Playback speed is changed through YouTube's player API within the page. If the player API is unavailable or the change cannot be confirmed, the extension changes the video element's playback speed directly. Requests to the player contain only a numeric playback speed, with no settings data or personal information. This processing takes place within your browser.
 
-現在の再生速度は、開いているページのメモリー内だけで保持し、保存やタブ間の同期は行いません。ページを再読み込みした場合や、新しいタブを開いた場合は 1.0 倍から始まります。
+The current playback speed is kept only in the open page's memory. It is not saved or synchronized across tabs. Reloading the page or opening a new tab starts playback at 1.0×.
 
-## 設定の保存
+## Settings Storage
 
-利用者が設定した速度のループと「ド」をクリックしたときの動作は、`storage` 権限を使用し、拡張機能専用の `chrome.storage.local` に保存します。これらの設定は、同じ Chrome プロファイル内の同じ DopaTube 拡張機能を使うタブで共有され、ブラウザーを再起動しても維持されます。Google アカウントへの同期や外部サーバーへの送信は行いません。
+Your custom speed cycle and the action for clicking the “ド” logo are saved in the extension's own `chrome.storage.local` using the `storage` permission. These settings are shared by tabs using the same DopaTube installation within the same Chrome profile and are retained across browser restarts. They are not synchronized to your Google account or sent to external servers.
 
-設定画面の「初期設定に戻す」で保存済みの設定を初期値に戻せます。拡張機能をアンインストールすると、保存した設定も削除されます。
+You can reset saved settings to their defaults by choosing **Restore defaults** on the settings page. Uninstalling the extension also removes its saved settings.
 
-## 外部サービス
+## External Services
 
-ポップアップの「YouTube を開く」をクリックすると、YouTube のサイトを新しいタブで開きます。DopaTube は、このリンクに利用者の情報や再生速度の情報を付加しません。
+Clicking **Open YouTube** in the popup opens YouTube in a new tab. DopaTube does not add user information or playback speed information to this link.
 
-YouTube 自体による情報の取り扱いは、YouTube および Google のプライバシーポリシーに従います。
+YouTube's own handling of information is governed by YouTube's and Google's privacy policies.
 
-## お問い合わせ
+## Contact
 
-このポリシーについてのお問い合わせは、[GitHub Issues](https://github.com/yatmsu/dopatube/issues) へお願いします。Issues に投稿した内容は公開されるため、個人情報や認証情報を記載しないでください。GitHub 上で提供する情報は GitHub のプライバシーポリシーに従って取り扱われます。
+For questions about this policy, please use [GitHub Issues](https://github.com/yatmsu/dopatube/issues). Issue posts are public, so do not include personal information or authentication credentials. Information you provide on GitHub is handled according to GitHub's privacy policy.
 
-## ポリシーの変更
+## Changes to This Policy
 
-情報の取り扱いに変更がある場合は、このポリシーと最終更新日を更新します。
+If our information handling practices change, we will update this policy and its last updated date.
