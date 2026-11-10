@@ -54,7 +54,7 @@ See the [Privacy Policy](PRIVACY.md) for details.
 ## Development
 
 Built with Manifest V3 and HTML, CSS, and JavaScript.
-No dependency installation or build step is required.
+No dependency installation or build step is required to load the extension. Automated tests and release tooling use the Node.js version in `.node-version` and locked npm development dependencies (`npm ci --ignore-scripts`).
 `player.js` runs in the page context to update YouTube's native player state. The content script runs in an isolated world, while the popup and options page run as extension pages. The page-context adapter accepts only a finite numeric playback speed from 0.25× to 4.0× and does not access extension storage. If the native player API is unavailable or does not confirm the change, the content script falls back to setting the video element's playback speed directly.
 
 ### Install from source
@@ -78,7 +78,7 @@ Close and reopen the popup to see changes to it.
 
 ### Tests
 
-With Node.js installed, run `node --test tests/*.test.cjs` to check settings validation, speed cycling, content script behavior, and Japanese/English localization.
+Run `npm ci --ignore-scripts`, then `npm test` to check settings validation, speed cycling, content script behavior, Japanese/English localization, and release packaging and publication safeguards. The extension-only tests can also run without npm dependencies using `node --test tests/*.test.cjs`.
 
 These tests use simulated browser and Chrome APIs. Check the actual popup, settings page, header layout, video speed, and YouTube speed menu in Chrome separately; the automated tests do not verify the live YouTube interface or visual layout.
 
@@ -89,6 +89,16 @@ User-facing text is stored in `_locales/en/messages.json` and `_locales/ja/messa
 To add a language, translate the English catalog into a new supported locale directory and keep message keys and numbered substitutions consistent. Also update the language selection in `localize.js`, which currently sets the document language to Japanese or English, and extend the locale handling and checks in `tests/i18n-helper.cjs` and `tests/i18n.test.cjs`.
 
 Chrome Web Store descriptions and screenshots are managed separately in the developer dashboard. Updating the extension's translation files does not update the detailed store descriptions or screenshots.
+
+### Releases
+
+Pushing a stable `vMAJOR.MINOR.PATCH` tag runs tests, creates and verifies a ZIP and SHA-256 checksum, attaches them to a GitHub Release, and submits the extension to the Chrome Web Store for review. The tag must match the root `manifest.json` version and point to a commit contained in `origin/main`. Release notes come from the matching version heading in [CHANGELOG.md](CHANGELOG.md). npm metadata describes development tooling; it does not define the extension version.
+
+The Release workflow also has manual `package`, `status`, `upload`, and `publish` modes. Start with `package` and then `status` to verify packaging and authentication without uploading to the store. Existing tags predating the workflow cannot be used to publish the newly added workflow or newer code. Use a new version and tag for the next release.
+
+Create a local package with `npm run release:package`. The ZIP, checksum, and release notes are written to the ignored `releases/` directory. Only runtime resources, locale catalogs, and LICENSE are included; development tooling is excluded.
+
+**Successful submission is not completed review.** The store publishes the version after Google approves it. See [Release automation](docs/releasing.md) for credential setup, mode behavior, recovery, and release commands.
 
 ## Support
 

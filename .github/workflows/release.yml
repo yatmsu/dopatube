@@ -1,0 +1,173 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "package: ZIP only; status: authenticate/read; upload: ZIP to store; publish: GitHub Release and review submission"
+        type: choice
+        options: [package, status, upload, publish]
+        default: package
+        required: true
+      tag:
+        description: "Existing release tag (required for upload/publish; optional for package/status)"
+        type: string
+
+permissions:
+  contents: read
+
+# Serialize every release, including manual runs. Never cancel an active write.
+concurrency:
+  group: chrome-web-store-release
+  queue: max
+  cancel-in-progress: false
+
+env:
+  RELEASE_MODE: ${{ github.event_name == 'push' && 'publish' || inputs.mode }}
+  RELEASE_TAG: ${{ inputs.tag || (github.ref_type == 'tag' && github.ref_name) || '' }}
+
+jobs:
+  package:
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      version: ${{ steps.package.outputs.version }}
+      archive: ${{ steps.package.outputs.archive }}
+      sha256: ${{ steps.package.outputs.sha256 }}
+      commit: ${{ steps.source.outputs.commit }}
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate release source
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor HEAD origin/main
+          if [[ "$RELEASE_MODE" == "upload" || "$RELEASE_MODE" == "publish" ]]; then
+            test -n "$RELEASE_TAG" || { echo "A release tag is required" >&2; exit 1; }
+          fi
+          if [[ -n "$RELEASE_TAG" ]]; then
+            test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")"
+          fi
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Validate release version
+        run: node scripts/package-release.mjs --check-version --tag "$RELEASE_TAG"
+      - run: npm test
+      - run: git diff --check
+      - name: Package and verify extension
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=()
+          if [[ -n "$RELEASE_TAG" ]]; then args+=(--tag "$RELEASE_TAG"); fi
+          node scripts/package-release.mjs "${args[@]}"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        id: upload
+        with:
+          name: release-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            releases/*.zip
+            releases/*.sha256
+            releases/release-notes.md
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+  github_release:
+    needs: package
+    if: github.event_name == 'push' || inputs.mode == 'publish'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.package.outputs.commit }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Install release tooling
+        run: npm ci --ignore-scripts
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          artifact-ids: ${{ needs.package.outputs.artifact_id }}
+          path: releases
+      - name: Verify downloaded archive
+        env:
+          ARCHIVE: ${{ needs.package.outputs.archive }}
+          ARCHIVE_SHA256: ${{ needs.package.outputs.sha256 }}
+        run: node scripts/package-release.mjs --verify "$ARCHIVE" --sha256 "$ARCHIVE_SHA256" --tag "$RELEASE_TAG"
+      - name: Create or verify GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARCHIVE: ${{ needs.package.outputs.archive }}
+        run: node scripts/github-release.mjs "$RELEASE_TAG" "$ARCHIVE" releases/release-notes.md
+
+  webstore:
+    needs: [package, github_release]
+    # A skipped GitHub Release job is expected for status/upload. Explicit status
+    # handling also blocks publishing after a failed package or GitHub Release.
+    if: >-
+      ${{
+        !cancelled() && needs.package.result == 'success' &&
+        (
+          ((github.event_name == 'push' || inputs.mode == 'publish') &&
+           needs.github_release.result == 'success') ||
+          (github.event_name == 'workflow_dispatch' &&
+           (inputs.mode == 'status' || inputs.mode == 'upload') &&
+           needs.github_release.result == 'skipped')
+        )
+      }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: chrome-web-store
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.package.outputs.commit }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Install release tooling
+        run: npm ci --ignore-scripts
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          artifact-ids: ${{ needs.package.outputs.artifact_id }}
+          path: releases
+      - name: Verify downloaded archive
+        env:
+          ARCHIVE: ${{ needs.package.outputs.archive }}
+          ARCHIVE_SHA256: ${{ needs.package.outputs.sha256 }}
+        run: node scripts/package-release.mjs --verify "$ARCHIVE" --sha256 "$ARCHIVE_SHA256" --tag "$RELEASE_TAG"
+      - name: Authenticate and run Chrome Web Store operation
+        env:
+          CWS_CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CWS_CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          CWS_REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+          CWS_PUBLISHER_ID: ${{ secrets.CWS_PUBLISHER_ID }}
+          CWS_EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
+          RELEASE_VERSION: ${{ needs.package.outputs.version }}
+          ARCHIVE: ${{ needs.package.outputs.archive }}
+        run: node scripts/publish-webstore.mjs "$RELEASE_MODE" "$RELEASE_VERSION" "$ARCHIVE"
