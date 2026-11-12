@@ -1,6 +1,9 @@
 {
+  "extensionName": {
+    "message": "DopaTube – YouTubeの再生速度をワンクリックで切替"
+  },
   "extensionDescription": {
-    "message": "YouTube のヘッダーから再生速度をワンクリックで切り替え。2〜5個の速度とロゴのクリック動作を設定できます。"
+    "message": "YouTube上部のボタンから、よく使う再生速度を切り替え。好みの速度ループとロゴのクリック動作を設定できます。"
   },
   "intro": {
     "message": "YouTube の再生速度を、ワンクリックで。"

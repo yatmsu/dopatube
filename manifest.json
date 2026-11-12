@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "DopaTube",
+  "name": "__MSG_extensionName__",
   "version": "1.2.0",
   "description": "__MSG_extensionDescription__",
   "default_locale": "en",

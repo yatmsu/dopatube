@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Clarify the localized extension name and short description for the Chrome Web Store.
+
 ## 1.2.0
 
 - Fix playback speed controls on live archive pages.

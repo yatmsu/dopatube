@@ -88,7 +88,7 @@ User-facing text is stored in `_locales/en/messages.json` and `_locales/ja/messa
 
 To add a language, translate the English catalog into a new supported locale directory and keep message keys and numbered substitutions consistent. Also update the language selection in `localize.js`, which currently sets the document language to Japanese or English, and extend the locale handling and checks in `tests/i18n-helper.cjs` and `tests/i18n.test.cjs`.
 
-Chrome Web Store descriptions and screenshots are managed separately in the developer dashboard. Updating the extension's translation files does not update the detailed store descriptions or screenshots.
+Chrome Web Store descriptions and screenshots are managed separately in the developer dashboard. Updating the extension's translation files does not update the detailed store descriptions or screenshots. Copy-ready Japanese and English detailed descriptions are available in [Store listing copy](docs/store-listing.md); copy only the contents of the matching text block.
 
 ### Releases
 

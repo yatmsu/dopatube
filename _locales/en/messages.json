@@ -1,6 +1,9 @@
 {
+  "extensionName": {
+    "message": "DopaTube – One-click YouTube playback speed"
+  },
   "extensionDescription": {
-    "message": "Change YouTube playback speed from the header with one click. Customize a cycle of 2–5 speeds and the logo click action."
+    "message": "Switch between your favorite playback speeds from a button in the YouTube header. Customize your speed cycle and logo action."
   },
   "intro": {
     "message": "Change YouTube playback speed with one click."
