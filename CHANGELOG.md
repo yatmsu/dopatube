@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.2.1
+
 - Clarify the localized extension name and short description for the Chrome Web Store.
 
 ## 1.2.0
